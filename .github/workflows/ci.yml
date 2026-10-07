@@ -1,0 +1,60 @@
+name: CI
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  app:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run build
+        env: { VITE_SUPABASE_URL: "https://ci.invalid", VITE_SUPABASE_ANON_KEY: "ci", VITE_PUBLIC_SITE_URL: "https://ci.invalid" }
+      - run: npm audit --audit-level=moderate
+
+  database-security:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env: { POSTGRES_PASSWORD: postgres }
+        ports: ["5432:5432"]
+        options: --health-cmd pg_isready --health-interval 5s --health-retries 10
+    env: { PGHOST: localhost, PGUSER: postgres, PGPASSWORD: postgres }
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply schema and run access-rule tests
+        run: |
+          P="psql -v ON_ERROR_STOP=1 -q"
+          $P -f supabase/tests/supabase_shim.sql
+          for f in supabase/migrations/*.sql; do $P -f "$f"; done
+          $P -f supabase/tests/rls_assert.sql | tee out.txt
+          grep -q "ALL SECURITY TESTS PASSED" out.txt
+
+  end-to-end:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env: { POSTGRES_PASSWORD: postgres }
+        ports: ["5432:5432"]
+        options: --health-cmd pg_isready --health-interval 5s --health-retries 10
+    env: { PGHOST: localhost, PGPORT: "5432", PGUSER: postgres, PGPASSWORD: postgres }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - name: PostgREST
+        run: |
+          curl -sSL -o pgrst.tar.xz https://github.com/PostgREST/postgrest/releases/download/v12.2.3/postgrest-v12.2.3-linux-static-x64.tar.xz
+          tar -xJf pgrst.tar.xz && echo "POSTGREST_BIN=$PWD/postgrest" >> "$GITHUB_ENV"
+      - name: Playwright
+        run: npm install --no-save playwright@1 && npx playwright install --with-deps chromium
+      - run: tests/e2e/run.sh
