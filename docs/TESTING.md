@@ -6,17 +6,17 @@ Die Test-App heisst «PM Test» (`app.perfectmatch.planner.test`) und läuft neb
 1. Neues Projekt `perfect-match-test`, **Region Frankfurt (eu-central-1)**, Free Plan.
 2. SQL Editor → nacheinander den Inhalt dieser Dateien ausführen:
    [`0001_init.sql`](../supabase/migrations/0001_init.sql), [`0002_realtime.sql`](../supabase/migrations/0002_realtime.sql), [`0003_storage.sql`](../supabase/migrations/0003_storage.sql).
-3. Authentication → Sign In / Providers → **Email**: aktiv, *Confirm email* an. **Multi-factor → TOTP** aktivieren.
-4. Authentication → Email Templates: *Confirm signup* → `Your Perfect Match code: {{ .Token }}`, *Reset password* → `Your code to set a new password: {{ .Token }}`, *Reauthentication* → `Your security code: {{ .Token }}`.
+3. Authentication → Sign In / Providers → **Email**: aktiv, *Confirm email* an, *Secure password change* an, Mindestlänge 10, Klein-/Grossbuchstaben + Ziffern, **Email OTP length 6** (Supabase-Standard ist neu 8, die App erwartet 6), OTP expiration 900 s. **Multi-Factor → TOTP**: Enabled (Standard).
+4. Mailvorlagen lassen sich erst mit eigenem SMTP anpassen. Im Testprojekt kommen deshalb Links statt Codes; Testkonten daher wie unter 5 von Hand anlegen.
 5. Testkonten: Der eingebaute Mailversand von Supabase stellt nur an Adressen von Mitgliedern deiner Supabase-Organisation zu. Für weitere Testkonten: Authentication → Users → *Add user* → *Create new user*, mit **Auto Confirm User**. Danach meldest du dich in der App mit E-Mail und Passwort an. Für den Partner-Test legst du zwei Konten an.
-6. Project Settings → API: **Project URL** und **anon public key** kopieren.
+6. Project Settings → API Keys: **Project URL** und **Publishable key** (`sb_publishable_…`) kopieren.
 
 In der Testumgebung fehlen: Google/Apple-Login, Turnstile, «Konto löschen» (die Edge Function ist nicht deployt) und eigenes SMTP.
 
 ## 2. GitHub
 Repo → Settings → Secrets and variables → Actions → *New repository secret*:
 - `TEST_SUPABASE_URL`: Project URL
-- `TEST_SUPABASE_ANON_KEY`: anon public key
+- `TEST_SUPABASE_ANON_KEY`: Publishable key
 
 Danach Actions → *Android test build* → *Run workflow*. Jeder Push auf `main` baut die App ebenfalls neu.
 
