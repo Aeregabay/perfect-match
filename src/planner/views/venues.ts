@@ -259,7 +259,7 @@ export function renderModal() {
 export function planSumHtml(loc: any) {
   const S = planStats(loc);
   return '<div class="ps-calc"><div><span class="lbl">' + t("Net") + "</span><b>" + fmtMoney(S.tot) + '</b></div><span class="op">+</span><div><span class="lbl">' + t("VAT") + "</span><b>" + fmtMoney(S.vat) + '</b></div><span class="op">−</span>' +
-    '<div><span class="lbl"><label for="pdisc">' + t("Discount %") + '</label></span><span class="drow"><input id="pdisc" data-pdisc="1" inputmode="decimal" value="' + esc(loc.planDiscount || "") + '" placeholder="0"><small>' + (S.disc ? "−" + fmtMoney(S.disc) : "") + '</small></span></div><span class="op">=</span>' +
+    '<div><span class="lbl"><label for="pdisc">' + t("Discount %") + '</label></span><span class="drow"><input id="pdisc" data-pdisc="1" inputmode="decimal" value="' + esc(loc.planDiscount || "") + '" placeholder="0"><small>' + (S.disc ? "−" + fmtMoney(S.disc) : "") + '</small></span></div><span class="op eq">=</span>' +
     '<div class="tot"><span class="lbl">' + t("Total") + '</span><span class="big">' + fmtMoney(S.total) + "</span></div></div>" +
     '<div class="plan-sum" style="margin-top:12px"><div><span class="lbl">' + t("With price") + "</span><b>" + S.priced + '</b></div><div><span class="lbl">' + t("Included") + "</span><b>" + S.inc + '</b></div><div><span class="lbl">' + t("To clarify") + '</span><b style="color:var(--pend-line)">' + S.todo + '</b></div><div><span class="lbl">' + t("Open") + "</span><b>" + S.open + "</b></div>" +
     (loc.price ? '<div><span class="lbl">' + t("Venue quote (checklist)") + "</span>" + esc(loc.price) + "</div>" : "") + "</div>";

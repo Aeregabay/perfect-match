@@ -323,7 +323,9 @@ label.btn{display:inline-block;cursor:pointer}
 .gross:empty{display:none}
 .pg-f .vat{display:inline-flex;align-items:center;gap:4px;font-size:13px;color:var(--muted)}
 .pg-f .vat input{width:52px;border:1px solid var(--line);border-radius:8px;padding:8px 6px;text-align:right;background:var(--surface);font:inherit}
-.ps-calc{display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px 14px}
+.ps-calc{display:flex;flex-wrap:wrap;align-items:flex-start;gap:10px 14px}
+.ps-calc>div>b,.ps-calc .op{min-height:36px;display:flex;align-items:center}
+.ps-calc .op{margin-top:18px}
 .ps-calc>div{display:flex;flex-direction:column;gap:2px}
 .ps-calc .lbl{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
 .ps-calc b{font-size:18px;font-variant-numeric:tabular-nums}
@@ -708,3 +710,29 @@ input.otp,.otp{font-size:22px!important;letter-spacing:.3em;text-align:center;te
 .stdr{display:flex;align-items:center;gap:8px;flex-basis:100%;font-size:12px;color:var(--muted);font-weight:600}
 .seg button.on.r-yes{background:var(--ok-soft);color:var(--ok)}
 .seg button.on.r-no{background:var(--warn-soft);color:var(--warn)}
+
+/* View header: summary on the left, primary action on the right, hint below */
+.vhead{display:flex;align-items:center;justify-content:space-between;gap:12px 16px;flex-wrap:wrap;margin:4px 0 10px}
+.vh-main{display:flex;align-items:baseline;gap:10px;min-width:0;flex-wrap:wrap}
+.vh-big{font:400 34px/1 var(--serif);font-variant-numeric:tabular-nums}
+.vh-big small{font:inherit;font-size:20px;color:var(--muted)}
+.vh-title{font:400 28px/1.1 var(--serif)}
+.vh-l{color:var(--muted);font-size:14px;font-weight:600}
+.btn.vh-btn{padding:10px 18px;font-size:14px;border-radius:999px;flex:none}
+.vh-bar{height:6px;border-radius:3px;background:var(--surface-2);overflow:hidden;margin:0 0 10px}
+.vh-bar i{display:block;height:100%;background:var(--accent);border-radius:3px;transition:width .3s}
+.vh-hint{margin:0 0 18px}
+/* Breathing room between the sticky header and the first element of every view (mobile) */
+@media (max-width:760px){
+  nav.tabs + :not(.subwrap){margin-top:22px}
+}
+/* Seating: table actions under the summary card */
+.st-actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:16px 0 4px}
+.st-actions .btn{padding:9px 16px;font-size:14px}
+.st-actions .st-quick{margin-left:auto}
+/* Planning total: own row on narrow screens instead of a dangling "=" */
+@media (max-width:760px){
+  .ps-calc .op.eq{display:none}
+  .ps-calc .tot{flex-basis:100%;border-top:1px solid var(--line);padding-top:10px;margin-top:2px}
+  .st-actions .st-quick{margin-left:0;flex-basis:100%;text-align:left}
+}

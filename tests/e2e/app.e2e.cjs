@@ -76,16 +76,16 @@ let fails=0; const check=(cond,msg)=>{ if(cond) log('  ok  '+msg); else { fails+
  await shot(A,'pm3-guests.png');
  log('— Seating, schedule, tasks'); await tab(A,'seat'); await A.click('[data-act=tbquick]'); await A.click('.pc[data-act=seatpick]:has-text("Sam")'); await A.click('.tb >> nth=0'); await A.waitForTimeout(200);
  check(/4\/10/.test(await A.textContent('.tb >> nth=0')),'household seated at table (4/10)'); await shot(A,'pm3-seat.png');
- await tab(A,'tasks'); await A.click('.gtools [data-act=tnew]'); await A.fill('#t-title','Book photographer'); await A.fill('#t-newitem','Ask 3 quotes'); await A.press('#t-newitem','Enter'); await A.click('.modal [data-act=tclose]');
+ await tab(A,'tasks'); await A.click('.vhead [data-act=tnew]'); await A.fill('#t-title','Book photographer'); await A.fill('#t-newitem','Ask 3 quotes'); await A.press('#t-newitem','Enter'); await A.click('.modal [data-act=tclose]');
  await A.click('.tk [data-act=tmove]'); check((await A.locator('.kb-col[data-col=doing] .tk').count())===1,'task moved to Ongoing');
- await tab(A,'agenda'); await A.click('.gtools [data-act=agnew]'); await A.fill('#ag-title','Ceremony'); await A.fill('#ag-start','15:00'); await A.dispatchEvent('#ag-start','change'); await A.fill('#ag-end','15:45'); await A.dispatchEvent('#ag-end','change');
+ await tab(A,'agenda'); await A.click('.vhead [data-act=agnew]'); await A.fill('#ag-title','Ceremony'); await A.fill('#ag-start','15:00'); await A.dispatchEvent('#ag-start','change'); await A.fill('#ag-end','15:45'); await A.dispatchEvent('#ag-end','change');
  await A.selectOption('#ag-lsel',{index:1}); await A.click('[data-act=aglinkadd]'); await A.click('.modal [data-act=agclose]'); await A.waitForSelector('.ag-card');
  check(/Ceremony/.test(await A.textContent('.ag')) && /Book photographer/.test(await A.textContent('.ag')),'schedule item with linked task'); await shot(A,'pm3-agenda.png');
  await tab(A,'home'); await A.waitForSelector('.hm-hero'); await shot(A,'pm3-home.png',{fullPage:true}); log('    kpis:',(await A.textContent('.hm-hero')).replace(/\s+/g,' '));
  await settle(A);
 
  log('— Undo / redo'); await tab(A,'tasks'); const nT=()=>+psql("select count(*) from entities where kind='task' and not deleted");
- const before=nT(); await A.click('.gtools [data-act=tnew]'); await A.fill('#t-title','Undo me'); await A.click('.modal [data-act=tclose]'); await A.waitForTimeout(900); await settle(A);
+ const before=nT(); await A.click('.vhead [data-act=tnew]'); await A.fill('#t-title','Undo me'); await A.click('.modal [data-act=tclose]'); await A.waitForTimeout(900); await settle(A);
  check(nT()===before+1,'task created'); await A.click('#hundo'); await A.waitForTimeout(300); await settle(A); check(nT()===before && !/Undo me/.test(await A.textContent('.kb')),'undo removes the task (app and server)');
  await A.click('#hredo'); await A.waitForTimeout(300); await settle(A); check(nT()===before+1 && /Undo me/.test(await A.textContent('.kb')),'redo brings it back');
  await tab(A,'loc'); await A.click('.subnav [data-v=check]'); await A.click('[data-act=galopen]'); await A.click('[data-act=galdelask]'); await A.click('[data-act=galdel]'); await A.click('[data-act=galclose]').catch(()=>{}); await A.waitForTimeout(900); await settle(A);
@@ -104,7 +104,7 @@ log('— Partner B joins'); await A.click('[data-act=tab][data-v=settings]'); aw
  await A.waitForTimeout(2500); await B.waitForTimeout(500); await A.evaluate(()=>document.dispatchEvent(new Event('visibilitychange'))); await B.evaluate(()=>document.dispatchEvent(new Event('visibilitychange'))); await A.waitForTimeout(2500);
  const gm=JSON.parse(psql(`select data from entities where kind='guest' and id='${gid.slice(3)}'`)); check(gm.mobile==='+41 79 000 00 00' && gm.note==='Vegetarian aunt','both edits of the same guest survive (merge)');
  log('— Stranger'); const {p:C}=await mk('C'); await signup(C,'eve@test.io'); await C.waitForSelector('#o-p1'); const leak=await C.evaluate(async()=>{ const r=await fetch('http://localhost:54321/rest/v1/entities?select=*',{headers:{apikey:'x',authorization:'Bearer '+(Object.values(localStorage).join(' ').match(/eyJ[\w-]+\.[\w-]+\.[\w-]+/)||[''])[0]}}); const j=await r.json(); return Array.isArray(j)? j.length : j; }); check(leak===0,'stranger reads 0 items via API ('+JSON.stringify(leak)+')');
- log('— Offline'); await CA.setOffline(true); await tab(A,'tasks'); await A.click('.gtools [data-act=tnew]'); await A.fill('#t-title','Offline task'); await A.click('.modal [data-act=tclose]'); await A.waitForTimeout(1500);
+ log('— Offline'); await CA.setOffline(true); await tab(A,'tasks'); await A.click('.vhead [data-act=tnew]'); await A.fill('#t-title','Offline task'); await A.click('.modal [data-act=tclose]'); await A.waitForTimeout(1500);
  const st=await A.textContent('#status'); check(/Offline/.test(st),'offline status shown: '+st.trim());
  await CA.setOffline(false); await A.evaluate(()=>window.dispatchEvent(new Event('online'))); await settle(A); check(+psql("select count(*) from entities where kind='task' and data->>'t'='Offline task'")===1,'offline edit sent after reconnect');
  log('— Reload keeps data'); await A.reload(); await A.waitForSelector('.hm-hero, .kb, .tabs'); await tab(A,'guests'); check((await A.locator('.grow').count())>=2,'data after reload');

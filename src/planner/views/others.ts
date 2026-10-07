@@ -7,7 +7,11 @@ import { state } from "../ctx";
 // ---------------------------------------------------------------- tasks (kanban)
 export function renderTasks() {
   const T = tasks(), C = COLS();
-  let h = '<div class="gtools" style="margin-top:0"><span class="hint" style="flex:1">' + esc(t("{done} of {n} tasks done. Drag cards or move them with ‹ ›.", { done: T.filter((x: any) => x.col === "done").length, n: T.length })) + '</span><button class="btn primary" data-act="tnew" data-col="todo">+ ' + t("Task") + '</button></div><div class="kb">';
+  const done = T.filter((x: any) => x.col === "done").length, pct = T.length ? Math.round((done / T.length) * 100) : 0;
+  let h = '<div class="vhead"><div class="vh-main"><span class="vh-big">' + done + "<small> / " + T.length + '</small></span><span class="vh-l">' + t("tasks done") + "</span></div>" +
+    '<button class="btn primary vh-btn" data-act="tnew" data-col="todo">+ ' + t("Task") + "</button></div>" +
+    '<div class="vh-bar" role="progressbar" aria-valuenow="' + pct + '" aria-valuemin="0" aria-valuemax="100"><i style="width:' + pct + '%"></i></div>' +
+    '<p class="hint vh-hint">' + esc(t("Drag cards or move them with ‹ ›.")) + '</p><div class="kb">';
   C.forEach((c, ci) => {
     const L = T.filter((x: any) => (x.col || "todo") === c[0]);
     h += '<div class="kb-col" data-col="' + c[0] + '"><div class="kb-h"><i style="background:' + c[2] + '"></i><h3>' + c[1] + '</h3><span class="n">' + L.length + "</span></div>";
@@ -66,8 +70,8 @@ export function renderSeat() {
     const on = sel && sel.hh === k;
     h += '<button class="pc ' + sideCls(m.side) + (on ? " sel" : "") + '" data-act="seatpick" data-hh="' + k + '">' + esc(lbl) + (L.length > 1 ? " <em>" + L.length + "</em>" : "") + "</button>"; });
   h += "</div></div></section>";
-  h += '<div class="gtools"><span style="flex:1"></span>' + (!S.tables.length ? '<button class="btn" data-act="tbquick">' + esc(t("Quick start: {n} round tables of 10", { n: quickTables() })) + "</button>" : "") +
-    '<button class="btn" data-act="tbadd" data-shape="long">+ ' + t("Long table") + '</button><button class="btn primary" data-act="tbadd" data-shape="round">+ ' + t("Round table") + "</button></div>";
+  h += '<div class="st-actions"><button class="btn primary" data-act="tbadd" data-shape="round">+ ' + t("Round table") + '</button><button class="btn" data-act="tbadd" data-shape="long">+ ' + t("Long table") + "</button>" +
+    (!S.tables.length ? '<button class="btn ghost st-quick" data-act="tbquick">' + esc(tp("Quick start: {n} round table of 10", "Quick start: {n} round tables of 10", quickTables())) + "</button>" : "") + "</div>";
   h += '<div class="st-grid">';
   S.tables.forEach((tb: any) => {
     const inT = P.filter((x) => S.assign[x.pid] === tb.id), n = inT.length, cap = +tb.cap || 8;
@@ -104,7 +108,10 @@ export function renderAgenda() {
       (dt ? '<span class="dt">' + esc(dt) + "</span>" : "") + (d[3] ? '<span class="lb">' + esc(d[3]) + "</span>" : "") + "<small>" + esc(tp("{n} item", "{n} items", n)) + "</small></button></li>";
   }).join("") + "</ol></div>";
   const L = agSorted(ui.agDay);
-  h += '<div class="gtools" style="margin-top:0"><span class="hint" style="flex:1">' + t("Tap an item to edit it. “+ Insert” between two items adds something in between.") + '</span><button class="btn primary" data-act="agnew" data-t="">+ ' + t("Schedule item") + "</button></div>";
+  const curDay = D.find((d) => d[0] === ui.agDay);
+  h += '<div class="vhead"><div class="vh-main"><span class="vh-title">' + esc(curDay ? curDay[1] : "") + '</span><span class="vh-l">' + esc(tp("{n} item", "{n} items", L.length)) + "</span></div>" +
+    '<button class="btn primary vh-btn" data-act="agnew" data-t="">+ ' + t("Schedule item") + "</button></div>" +
+    '<p class="hint vh-hint">' + t("Tap an item to edit it. “+ Insert” between two items adds something in between.") + "</p>";
   if (!L.length) return h + '<div class="ag-empty">' + t("No schedule for this day yet. Start with “+ Schedule item”.") + "</div>";
   h += '<div class="ag">';
   L.forEach((x: any, i: number) => {
