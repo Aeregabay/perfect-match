@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!-- Test build only: separate app ("Perfect Match Test", id app.perfectmatch.planner.test) so it can sit next to the store app. -->
+<resources>
+    <string name="app_name">PM Test</string>
+    <string name="title_activity_main">PM Test</string>
+</resources>

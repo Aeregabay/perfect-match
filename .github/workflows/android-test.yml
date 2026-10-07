@@ -1,0 +1,59 @@
+name: Android test build
+# Installable test app ("PM Test", id app.perfectmatch.planner.test) against the Supabase TEST project.
+# Runs on every push to main and on demand. The APK is attached to the pre-release "test-latest".
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: android-test
+  cancel-in-progress: true
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    environment: test
+    steps:
+      - name: Check test configuration
+        env:
+          URL: ${{ secrets.TEST_SUPABASE_URL }}
+          KEY: ${{ secrets.TEST_SUPABASE_ANON_KEY }}
+        run: |
+          if [ -z "$URL" ] || [ -z "$KEY" ]; then
+            echo "::error::Secrets TEST_SUPABASE_URL and TEST_SUPABASE_ANON_KEY are missing in environment 'test' (see docs/TESTING.md)."
+            exit 1
+          fi
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: "21" }
+      - uses: android-actions/setup-android@v3
+      - run: npm ci
+      - run: npm run build
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.TEST_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.TEST_SUPABASE_ANON_KEY }}
+          VITE_PUBLIC_SITE_URL: https://example.invalid
+      - run: npx cap sync android
+        env: { PM_TEST_BUILD: "1" }
+      - name: Build test APK
+        working-directory: android
+        env:
+          VERSION_CODE: ${{ github.run_number }}
+          VERSION_NAME: ${{ github.run_number }}
+        run: ./gradlew assembleDebug --no-daemon
+      - name: Publish pre-release "test-latest"
+        env: { GH_TOKEN: "${{ github.token }}" }
+        run: |
+          cp android/app/build/outputs/apk/debug/app-debug.apk perfect-match-test.apk
+          gh release delete test-latest --cleanup-tag --yes || true
+          gh release create test-latest perfect-match-test.apk --prerelease --target "$GITHUB_SHA" \
+            --title "Test build ${GITHUB_SHA::7}" \
+            --notes "Test app (PM Test) against the Supabase test project. Not for production. Build ${{ github.run_number }}."
+      - uses: actions/upload-artifact@v4
+        with:
+          name: perfect-match-test-apk
+          path: perfect-match-test.apk
+          retention-days: 14

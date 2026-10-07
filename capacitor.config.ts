@@ -7,7 +7,8 @@ const config: CapacitorConfig = {
   android: {
     allowMixedContent: false,
     captureInput: true,
-    webContentsDebuggingEnabled: false,
+    // Only test builds (PM_TEST_BUILD=1) can be inspected via chrome://inspect.
+    webContentsDebuggingEnabled: process.env.PM_TEST_BUILD === "1",
   },
   server: { androidScheme: "https", cleartext: false },
 };

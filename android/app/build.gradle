@@ -29,6 +29,11 @@ android {
         }
     }
     buildTypes {
+        debug {
+            // Test build: own app id, talks to the Supabase test project.
+            applicationIdSuffix ".test"
+            versionNameSuffix "-test"
+        }
         release {
             if (System.getenv("ANDROID_KEYSTORE_PATH")) signingConfig signingConfigs.release
             minifyEnabled true

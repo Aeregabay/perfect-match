@@ -18,7 +18,7 @@
 - Sync: `src/lib/sync.ts` (Diff gegen Serverstand, Outbox, Realtime + Polling-Fallback), verschlüsselter Offline-Cache (AES-GCM) in `src/lib/securecache.ts`.
 - Undo/Redo (10 Schritte, eintragsweise, Partner-Änderungen bleiben): `src/planner/history.ts`.
 - Einstellungen pro Hochzeit: Namen, Datum, Kapazität, Währung, Standard-MwSt, Website-Link, Event-Tage, Wunschmonate, Sperrzeiten, Menüs, Unterkünfte, Partner-Code, 2FA, Export JSON/CSV, Konto löschen.
-- CI: `.github/workflows/ci.yml` (typecheck, build, audit, 51 SQL-Sicherheitstests, E2E mit Postgres + PostgREST + Gateway-Stand-in + Playwright), `android.yml` (signiertes AAB bei Tag `v*`), `web.yml` (Cloudflare Pages).
+- CI: `.github/workflows/ci.yml` (typecheck, build, audit, 51 SQL-Sicherheitstests, E2E mit Postgres + PostgREST + Gateway-Stand-in + Playwright), `android.yml` (signiertes AAB bei Tag `v*`), `web.yml` (Cloudflare Pages), `android-test.yml` (Test-APK «PM Test» gegen das Supabase-Testprojekt, Release `test-latest`; siehe `docs/TESTING.md`).
 - i18n: englischer Quelltext in t()/tp(); `npm run i18n:extract` → `src/i18n/catalog.json`.
 
 ## Teststand
