@@ -24,10 +24,11 @@
 ## Teststand
 - 51 SQL-Sicherheitstests grün; Mutationstest: kaputte Regeln werden erkannt.
 - E2E grün (Registrierung, Locations inkl. Fotos/PDF, Planung mit MwSt/Rabatt, Gäste inkl. StD-Rückmeldung, Import mit Limit, Sitzplan, Ablauf, Aufgaben, Undo/Redo, Mobile-Tab-Leiste, Partner-Beitritt, Merge, Fremde ohne Zugriff, Offline, Konto löschen).
-- Android-Build bisher nur in GitHub Actions möglich.
+- Android-Build nur in GitHub Actions (Runner-SDK, `setup-android` ist defekt). Test-APK baut grün.
+- Testumgebung (07.10.2026): Supabase-Projekt `perfect-match-test` (Frankfurt, Ref `bytdsduhzyrfekxlhdnl`), Migrationen eingespielt, Email-OTP 6-stellig, TOTP an. Secrets `TEST_SUPABASE_URL`/`TEST_SUPABASE_ANON_KEY` (Publishable Key) gesetzt. APK: Release `test-latest`.
 
 ## Offen
-1. GitHub-Secrets laut SETUP Abschnitt 2, erster CI-Lauf und Android-Build (Tag `v0.2.2`).
+1. Produktions-Secrets laut SETUP Abschnitt 2 und signierter Android-Build (Tag `v0.2.2`). CI läuft bereits grün.
 2. Google Play Billing (Einmalkauf) mit serverseitiger Prüfung (Edge Function setzt `premium`).
 3. Offizielle Google/Apple-Button-Grafiken.
 4. Rechtstexte (Datenschutz, AGB, Impressum) + AVVs (Supabase, Cloudflare, Mail-Provider, Google, Apple).
