@@ -11,6 +11,10 @@ const config: CapacitorConfig = {
     webContentsDebuggingEnabled: process.env.PM_TEST_BUILD === "1",
   },
   server: { androidScheme: "https", cleartext: false },
+  plugins: {
+    // Edge to edge (Android 15+): Capacitor provides --safe-area-inset-* CSS variables; see app.css.
+    SystemBars: { insetsHandling: "css", initialViewportFitValueHint: "cover" },
+  },
 };
 
 export default config;
