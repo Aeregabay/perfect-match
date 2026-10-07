@@ -17,6 +17,14 @@ android {
         }
     }
     signingConfigs {
+        // Test builds only (app id ...planner.test, test backend). Fixed key so new test APKs install as updates.
+        // Deliberately in the repo: it signs nothing that reaches the store or production data.
+        test {
+            storeFile file("test-signing.jks")
+            storePassword "pm-test-only"
+            keyAlias "pmtest"
+            keyPassword "pm-test-only"
+        }
         release {
             // Provided by CI secrets; never committed.
             def ks = System.getenv("ANDROID_KEYSTORE_PATH")
@@ -33,6 +41,7 @@ android {
             // Test build: own app id, talks to the Supabase test project.
             applicationIdSuffix ".test"
             versionNameSuffix "-test"
+            signingConfig signingConfigs.test
         }
         release {
             if (System.getenv("ANDROID_KEYSTORE_PATH")) signingConfig signingConfigs.release

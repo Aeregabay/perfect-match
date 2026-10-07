@@ -25,6 +25,8 @@ Die aktuelle APK liegt immer unter **Releases → test-latest** (`perfect-match-
 - **Emulator**: Android Studio → Device Manager → *Create Virtual Device* (z. B. Pixel 8, Android 15, Image mit Google Play) → starten → APK ins Emulatorfenster ziehen.
 - **Eigenes Android-Telefon**: Release-Seite auf dem Telefon öffnen → APK laden → Installation aus dieser Quelle erlauben.
 
+Signatur: Test-Builds sind mit dem festen Testschlüssel `android/app/test-signing.jks` signiert, neue APKs installieren sich deshalb als Update über die alte Version. Der Schlüssel liegt bewusst im Repo, er gilt nur für die Test-App, nie für den Store.
+
 Debugging: In der Test-App ist WebView-Debugging aktiv. Mit Chrome auf dem PC öffnest du `chrome://inspect` und siehst Konsole und Netzwerk.
 
 Hinweis: Das Repo ist öffentlich. Das gilt damit auch für die Test-APK und den darin enthaltenen anon key. Der anon key ist von Supabase als öffentlich vorgesehen und durch RLS geschützt. Mit der APK kann sich aber jeder im Testprojekt registrieren, sofern er einen Bestätigungscode erhält.

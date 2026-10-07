@@ -8,6 +8,8 @@ android/.gradle
 android/local.properties
 *.keystore
 *.jks
+# Exception: fixed signing key for TEST builds only (app id ...planner.test). Never for release.
+!android/app/test-signing.jks
 
 android/app/src/main/assets/public
 android/app/src/main/assets/capacitor.config.json
