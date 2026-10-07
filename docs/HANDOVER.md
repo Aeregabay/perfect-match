@@ -9,6 +9,7 @@
 - Konten/Konfiguration (Supabase, Cloudflare, Google, Apple, Play) macht der Owner selbst – Anleitung in `docs/SETUP.md`.
 - Login: Google, Apple oder E-Mail + Passwort (E-Mail allein reicht nicht), optional 2FA (TOTP).
 - Funktionen und Look 1:1 wie das Planer-Artefakt des Owners (https://claude.ai/artifact/RUSuYMPLmCyq1qTJEiE3Kb), ausser was generalisiert werden muss. Der Planer bleibt separat; Änderungen am Planer werden auf Wunsch portiert («übernehme die letzte Änderung»): Live-Artefakt lesen, Code ohne eingebettete Daten extrahieren, gegen den zuletzt portierten Stand diffen, übertragen, testen. Zuletzt portiert: Planer-Version mit Save-the-Date-Rückmeldung (07.10.2026, 18:31).
+- Bewusste Abweichungen vom Planer (beim Portieren erhalten): Ablauf-Tage als horizontaler Zeitstrahl (`.ag-tl`), Datums-Locale = App-Sprache + Geräteregion, Safe-Area-Handling für Android.
 - Bewusst nicht portiert: Sitzplan-Export für die private Hochzeitswebsite, Beispiel-Locations, länderspezifische Inhalte.
 
 ## Architektur

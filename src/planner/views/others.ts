@@ -1,5 +1,6 @@
 // Seating plan, schedule, tasks.
-import { ui, t, tp, esc, DAYS, fmtTime } from "../ctx";
+import { ui, t, tp, esc, DAYS, fmtTime, W, settings } from "../ctx";
+import { LOCALE } from "../../lib/i18n";
 import { COLS, tasks, findT, seat, seatPeople, sideCls, AGTAGS, agenda, tmin, tfmt, agSorted, openQs, lname, findQ, defaultDay } from "../data";
 import { state } from "../ctx";
 
@@ -93,7 +94,15 @@ export function renderAgenda() {
   const D = DAYS();
   if (!D.length) return '<div class="ag-empty">' + t("Add your event days in Settings to plan the schedule.") + ' <button class="btn" data-act="tab" data-v="settings">' + t("Settings") + "</button></div>";
   if (!D.some((d) => d[0] === ui.agDay)) ui.agDay = defaultDay();
-  let h = '<div class="ag-days">' + D.map((d) => { const n = agenda().filter((x: any) => x.day === d[0]).length; return '<button class="' + (ui.agDay === d[0] ? "on" : "") + '" data-act="agday" data-v="' + d[0] + '"><b>' + esc(d[1]) + "</b><small>" + esc((d[3] ? d[3] + " · " : "") + tp("{n} item", "{n} items", n)) + "</small></button>"; }).join("") + "</div>";
+  // Days as a horizontal timeline: dot per day on a line, date (if known), label and item count.
+  const wd = W.w && W.w.wedding_date ? new Date(W.w.wedding_date + "T12:00:00") : null, defs: any[] = settings().days || [];
+  const dfmt = new Intl.DateTimeFormat(LOCALE, { day: "numeric", month: "short" });
+  let h = '<div class="ag-tl"><ol role="tablist" aria-label="' + t("Days") + '" style="--n:' + D.length + '">' + D.map((d) => {
+    const n = agenda().filter((x: any) => x.day === d[0]).length, on = ui.agDay === d[0], def = defs.find((x: any) => x.id === d[0]) || {};
+    let dt = ""; if (wd && typeof def.off === "number") { const x = new Date(wd); x.setDate(x.getDate() + def.off); dt = dfmt.format(x); }
+    return '<li class="' + (on ? "on" : "") + (d[0] === "main" ? " main" : "") + '"><button role="tab" aria-selected="' + on + '" data-act="agday" data-v="' + d[0] + '"><span class="dot" aria-hidden="true"></span><b>' + esc(d[1]) + "</b>" +
+      (dt ? '<span class="dt">' + esc(dt) + "</span>" : "") + (d[3] ? '<span class="lb">' + esc(d[3]) + "</span>" : "") + "<small>" + esc(tp("{n} item", "{n} items", n)) + "</small></button></li>";
+  }).join("") + "</ol></div>";
   const L = agSorted(ui.agDay);
   h += '<div class="gtools" style="margin-top:0"><span class="hint" style="flex:1">' + t("Tap an item to edit it. “+ Insert” between two items adds something in between.") + '</span><button class="btn primary" data-act="agnew" data-t="">+ ' + t("Schedule item") + "</button></div>";
   if (!L.length) return h + '<div class="ag-empty">' + t("No schedule for this day yet. Start with “+ Schedule item”.") + "</div>";
